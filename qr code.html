@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional QR Generator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            text-align: center;
+        }
+
+        h2 { color: #333; margin-bottom: 10px; font-size: 1.6rem; font-weight: 700; }
+        p { color: #666; margin-bottom: 20px; font-size: 0.95rem; }
+
+        input { 
+            width: 100%;
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 10px; 
+            border: 2px solid #eee;
+            outline: none;
+            font-size: 16px;
+        }
+        
+        /* This is how it looks on your screen */
+        #qrcode-wrapper {
+            background: white;
+            padding: 15px; 
+            border: 8px solid #000; 
+            display: inline-block;
+            margin-bottom: 20px;
+            line-height: 0;
+        }
+
+        #qrcode img, #qrcode canvas {
+            max-width: 100%;
+            height: auto !important;
+        }
+
+        .btn {
+            background: #28a745;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            text-transform: uppercase;
+            width: 100%;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>QR Generator</h2>
+        <p>Paste your link or text below</p>
+        
+        <input type="text" id="text" placeholder="Paste link here..." oninput="generateQR()">
+        
+        <div id="qrcode-wrapper">
+            <div id="qrcode"></div>
+        </div>
+
+        <button id="download-btn" class="btn" onclick="downloadJPG()">Download JPG</button>
+    </div>
+
+    <script>
+        var qrcodeContainer = document.getElementById("qrcode");
+        var btn = document.getElementById("download-btn");
+        
+        var qrcode = new QRCode(qrcodeContainer, {
+            width: 400, // Higher resolution for better quality
+            height: 400,
+            colorDark : "#000000",
+            colorLight : "#ffffff",
+            correctLevel : QRCode.CorrectLevel.H
+        });
+
+        function generateQR() {
+            var data = document.getElementById("text").value;
+            if (data.trim() !== "") {
+                qrcode.makeCode(data);
+                btn.style.display = "block"; 
+            } else {
+                btn.style.display = "none";
+            }
+        }
+
+        function downloadJPG() {
+            var qrCanvas = qrcodeContainer.querySelector("canvas");
+            if (!qrCanvas) return;
+
+            var finalCanvas = document.createElement("canvas");
+            var ctx = finalCanvas.getContext("2d");
+
+            // Settings to match your UI
+            var internalPadding = 20; 
+            var borderWidth = 10; 
+            
+            finalCanvas.width = qrCanvas.width + (internalPadding * 2) + (borderWidth * 2);
+            finalCanvas.height = qrCanvas.height + (internalPadding * 2) + (borderWidth * 2);
+
+            // 1. Fill White Background (to make it a valid JPG)
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+            // 2. Draw the Thick Black Border Frame
+            ctx.fillStyle = "#000000";
+            ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height); // Draw black box first
+            
+            // 3. Draw a White box inside the black one (to create the border effect)
+            ctx.fillStyle = "#ffffff";
+            ctx.fillRect(borderWidth, borderWidth, finalCanvas.width - (borderWidth * 2), finalCanvas.height - (borderWidth * 2));
+
+            // 4. Draw the QR Code in the very center
+            ctx.drawImage(qrCanvas, internalPadding + borderWidth, internalPadding + borderWidth);
+
+            // 5. Save as JPG
+            var link = document.createElement("a");
+            link.download = "QR_Code_with_Border.jpg";
+            link.href = finalCanvas.toDataURL("image/jpeg", 1.0);
+            link.click();
+        }
+    </script>
+
+</body>
+</html>
