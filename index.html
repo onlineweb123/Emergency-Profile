@@ -39,7 +39,7 @@
             position: fixed;
             top: 15px;
             right: 15px;
-            font-size: 20px;
+            font-size: 18px;
             cursor: pointer;
             z-index: 1001;
             background: #3498db;
@@ -51,8 +51,30 @@
             transition: 0.3s;
         }
 
-        .share-btn:hover {
-            background: #2980b9;
+        /* Floating Tool Button */
+        .tools-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #e67e22;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            cursor: pointer;
+            z-index: 1001;
+            text-decoration: none;
+            transition: 0.3s transform;
+        }
+
+        .tools-fab:hover {
+            transform: scale(1.1);
+            background-color: #d35400;
         }
 
         /* Side Bar Styles */
@@ -154,6 +176,10 @@
         <i class="fas fa-share-alt"></i> Share
     </button>
 
+    <a href="tools.html" class="tools-fab" id="toolsBtn">
+        <i class="fas fa-tools"></i>
+    </a>
+
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
 
     <div class="sidebar" id="sidebar">
@@ -166,17 +192,10 @@
         </div>
 
         <ul class="profile-list" id="profileList">
-                              
             <li><a onclick="loadProfile('mathavan.html', 'Mathavan')"><i class="fas fa-user-shield"></i> Mathavan</a></li>
-            
             <li><a onclick="loadProfile('sapari.html', 'Sapari')"><i class="fas fa-user"></i> Sapari</a></li>
-            
             <li><a onclick="loadProfile('santhosh.html', 'Santhosh')"><i class="fas fa-user"></i> Santhosh</a></li>
-        
             <li><a onclick="loadProfile('guest.html', 'Guest')"><i class="fas fa-user"></i> Guest User</a></li>
-            
-            
-            
         </ul>
     </div>
 
@@ -194,22 +213,20 @@
 
         function loadProfile(url, name) {
             document.getElementById('contentFrame').src = url;
-            
-            // முழுமையான Link-ஐ சேமிக்க (உதாரணம்: domain.com/mathavan.html)
-            // தற்போதைய URL-ன் அடிப்படையிலேயே Link அமையும்
+
+            // URL தயார் செய்தல்
             currentProfileUrl = window.location.origin + window.location.pathname.replace(/[^\/]*$/, '') + url;
-            
-            // Profile லோடு ஆனதும் Share பட்டனை காட்டவும்
+
+            // Profile திறந்தவுடன்: Share காட்டு, Tool பட்டனை மறை
             document.getElementById('shareBtn').style.display = "block";
-            
+            document.getElementById('toolsBtn').style.display = "none";
+
             toggleSidebar();
         }
 
-        // Share & Copy Function
         async function shareProfile() {
             if (!currentProfileUrl) return;
 
-            // 1. Copy to Clipboard
             try {
                 await navigator.clipboard.writeText(currentProfileUrl);
                 alert("Link copied to clipboard!");
@@ -217,7 +234,6 @@
                 console.error("Copy failed", err);
             }
 
-            // 2. Share Menu (மொபைலுக்கு மட்டும் வேலை செய்யும்)
             if (navigator.share) {
                 navigator.share({
                     title: 'Emergency Profile',
@@ -249,6 +265,10 @@
             frame.open();
             frame.write('<body style="display:flex; justify-content:center; align-items:center; height:90vh; font-family:sans-serif; color:#777;"><h2>Open Your Sidebar</h2></body>');
             frame.close();
+            
+            // ஆரம்பத்தில் Tool பட்டன் தெரியும், Share பட்டன் மறையும்
+            document.getElementById('toolsBtn').style.display = "flex";
+            document.getElementById('shareBtn').style.display = "none";
         };
     </script>
 
