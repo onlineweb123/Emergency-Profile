@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive Link Converter</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f7f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .converter-box {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 10px;
+        }
+        #resultArea {
+            margin-top: 20px;
+            display: none;
+        }
+        .result-link {
+            background: #e8f4fd;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-size: 14px;
+            border: 1px dashed #3498db;
+            color: #2980b9;
+        }
+        .copy-btn {
+            background: #27ae60;
+            margin-top: 10px;
+        }
+        .preview-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-top: 15px;
+            border: 3px solid #3498db;
+        }
+        .back-link {
+            display: block;
+            margin-top: 20px;
+            text-decoration: none;
+            color: #7f8c8d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="converter-box">
+    <i class="fab fa-google-drive" style="font-size: 40px; color: #ffba00;"></i>
+    <h2>Drive Direct Link Tool</h2>
+    <p style="font-size: 14px; color: #666;">Paste your Google Drive "Share" link below:</p>
+    
+    <input type="text" id="driveLink" placeholder="https://drive.google.com/file/d/XXXX/view?usp=sharing">
+    <button onclick="convertLink()">Generate Embed Link</button>
+
+    <div id="resultArea">
+        <p style="font-weight: bold; margin-top: 15px;">Your Direct Link:</p>
+        <div id="directLink" class="result-link"></div>
+        <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+        
+        <p style="margin-top: 15px;">Preview:</p>
+        <img id="preview" src="" class="preview-img">
+    </div>
+
+    <a href="tools.html" class="back-link"><i class="fas fa-arrow-left"></i> Back to Tools</a>
+</div>
+
+<script>
+    function convertLink() {
+        const input = document.getElementById('driveLink').value;
+        const resultArea = document.getElementById('resultArea');
+        const directLinkDiv = document.getElementById('directLink');
+        const previewImg = document.getElementById('preview');
+
+        // டிரைவ் லிங்கில் உள்ள ID-ஐ மட்டும் எடுக்கும் Regular Expression
+        const regex = /\/d\/([a-zA-Z0-9_-]+)/;
+        const match = input.match(regex);
+
+        if (match && match[1]) {
+            const fileId = match[1];
+            // இதுதான் இணையதளத்தில் போட்டோவை காட்ட உதவும் Direct Link Format
+            const directUrl = `https://lh3.googleusercontent.com/u/0/d/${fileId}`;
+            
+            directLinkDiv.innerText = directUrl;
+            previewImg.src = directUrl;
+            resultArea.style.display = 'block';
+        } else {
+            alert("Please enter a valid Google Drive Share link!");
+        }
+    }
+
+    function copyLink() {
+        const link = document.getElementById('directLink').innerText;
+        navigator.clipboard.writeText(link);
+        alert("Direct link copied! You can now paste this in your img src tag.");
+    }
+</script>
+
+</body>
+</html>
